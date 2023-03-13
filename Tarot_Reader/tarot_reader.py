@@ -51,14 +51,14 @@ class Cards:
                 
                 if user_input == 1:
                     # call standard spread
-                    upright_deck = self.createUprightDeck(upright_filePath)
-                    reverse_deck = self.createReverseDeck(reverse_filePath)
+                    upright_deck = self.createUprightDeck(self.upright_filePath)
+                    reverse_deck = self.createReverseDeck(self.reverse_filePath)
                     self.three_card_spread(user_input, upright_deck,reverse_deck)
                     
                 elif user_input == 2:
                     # call universal spread
-                    upright_deck = self.createUprightDeck(upright_filePath)
-                    reverse_deck = self.createReverseDeck(reverse_filePath)
+                    upright_deck = self.createUprightDeck(self.upright_filePath)
+                    reverse_deck = self.createReverseDeck(self.reverse_filePath)
                     self.six_card_spread(user_input, upright_deck, reverse_deck)
                     
                 elif user_input == 3:
@@ -126,6 +126,9 @@ class Cards:
                 print("\033[1;46;48m" + x + "\033[0;30;48m")
                 print("\033[1;30;48m" + key + "\033[0;30;48m")
                 print(value, "\n")
+        
+        msg = EndingMessage()
+        return msg
             
                   
     def six_card_spread(self, user_input, upright_tarot, reverse_tarot):
@@ -176,6 +179,9 @@ class Cards:
                 print("\033[1;46;48m" + x + "\033[0;30;48m")
                 print("\033[1;46;48m" + key + "\033[0;30;48m")
                 print(value, "\n")
+                
+        msg = EndingMessage()
+        return msg
         
 
 def OpeningMessage(player_name):
@@ -197,15 +203,13 @@ def EndingMessage():
             "\033[0;30;48m \n\n"
 
 def main():
-    global upright_filePath
-    upright_filePath = Path("C:\Users\audra\Documents\python-game-master\python-game-master\TarotCardsUpright.csv")
-    global reverse_filePath
-    reverse_filePath = Path("C:\Users\audra\Documents\python-game-master\python-game-master\TarotCardsReversed.csv")
+    upright_filePath = Path(r"C:\Users\audra\Documents\python-game-master\python-game-master\TarotCardsUpright.csv")
+    reverse_filePath = Path(r"C:\Users\audra\Documents\python-game-master\python-game-master\TarotCardsReversed.csv")
     
     name = input("What is your name?")
     OpeningMessage(name)
     Cards(upright_filePath, reverse_filePath)
-    EndingMessage()
+    
 
 if __name__ == "__main__":
     main()
