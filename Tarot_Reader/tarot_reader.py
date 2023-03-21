@@ -41,14 +41,13 @@ class Cards:
         
         while self.reading is True:
             try:
-                user_input = input(int
-                                   ("\nWhat type of tarot reading would you like? Please\n"
+                user_input = input("\nWhat type of tarot reading would you like? Please\n"
                                             "enter a number that corresponds to an available option.\n"
                                             "1: Standard Major Arcana Spread\n"
                                             "2: Universal Major Arcana Spread\n"
                                             "3. Exit\n"
                                             "Enter a choice: ")
-                                   )
+                                   
                 
                 if int(user_input) == 1:
                     # call standard spread
@@ -87,6 +86,11 @@ class Cards:
         """
         three_card_spread:
         If user input is equal to 1, display a 3 card tarot spread.
+        
+        Args:
+            user_input (int): input from call in initialized standard_reading method
+            upright_tarot (dict): dictionary with upright (standard) cards and their meanings
+            reverse_tarot (dict): dictionary with reversed cards and their meanings
         """
         self.user_input = user_input
         self.upright_tarot = upright_tarot
@@ -142,20 +146,20 @@ class Cards:
         six_card_spread: If user input is equal to 2, display a 6 card tarot spread.
 
         Args:
-            user_input (_type_): _description_
-            upright_tarot (_type_): _description_
-            reverse_tarot (_type_): _description_
+            user_input (int): input from call in initialized standard_reading method
+            upright_tarot (dict): dictionary with upright (standard) cards and their meanings
+            reverse_tarot (dict): dictionary with reversed cards and their meanings
         """
         self.user_input = user_input
         self.upright_tarot = upright_tarot
         self.reverse_tarot = reverse_tarot
         
-        while user_input == 2:
+        try:
             x = rand.randint(0,6)
-            upright_deck = rand.sample(upright_tarot, x)
+            upright_deck = rand.sample(sorted(upright_tarot.items()), x)
             y = 6 - x
             if y > 0:
-                reverse_deck = rand.sample(reverse_deck, y)
+                reverse_deck = rand.sample(sorted(reverse_tarot.items()), y)
                 deck = upright_deck
                 deck.extend(reverse_deck)
             else:
@@ -172,6 +176,8 @@ class Cards:
                 '~~ Draw 6 : The likely outcome ~~'
             )
             
+            universal_header_standard = sorted(tuple(tuple_universal_headers))
+            
             # Changes tarot deck from list -> dict -> list
             dict_tarot_deck = {k:v for k, v in tarot_deck}
             list_tarot_deck = list(dict_tarot_deck.items())
@@ -181,11 +187,13 @@ class Cards:
                   "~~~~~ UNIVERSAL TAROT READING ~~~~~"
                   + "\033[0;30;48m\n")
             
-            for x, (key, value) in zip(tuple_universal_headers, list_tarot_deck):
+            for x, (key, value) in zip(universal_header_standard, list_tarot_deck):
                 print("\033[1;46;48m" + x + "\033[0;30;48m")
                 print("\033[1;46;48m" + key + "\033[0;30;48m")
                 print(value, "\n")
-                
+        
+        except UnboundLocalError:
+            return "Unable to return result, variables to return out of bounds."
         
 
 def OpeningMessage(player_name):
