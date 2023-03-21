@@ -9,15 +9,15 @@
 
 from pathlib import Path
 import random as rand
+import re
 import pandas
 
 # Class for card objects
 class Cards:
     def __init__(self, upright_filePath, reverse_filePath):
-       self.cardsInDeck = []
-       self.cardsDrawn = []
        self.upright_filePath = upright_filePath
        self.reverse_filePath = reverse_filePath
+       self.standard_reading()
        
        
     # Creates an upright tarot cards
@@ -38,7 +38,8 @@ class Cards:
     
     def standard_reading(self, reading=True):
         self.reading = reading
-        while reading:
+        
+        while self.reading is True:
             try:
                 user_input = input(int
                                    ("\nWhat type of tarot reading would you like? Please\n"
@@ -49,27 +50,29 @@ class Cards:
                                             "Enter a choice: ")
                                    )
                 
-                if user_input == 1:
+                if int(user_input) == 1:
                     # call standard spread
                     upright_deck = self.createUprightDeck(self.upright_filePath)
                     reverse_deck = self.createReverseDeck(self.reverse_filePath)
-                    self.three_card_spread(user_input, upright_deck,reverse_deck)
+                    self.three_card_spread(upright_deck, reverse_deck, user_input)
+                    break
                     
-                elif user_input == 2:
+                elif int(user_input) == 2:
                     # call universal spread
                     upright_deck = self.createUprightDeck(self.upright_filePath)
                     reverse_deck = self.createReverseDeck(self.reverse_filePath)
-                    self.six_card_spread(user_input, upright_deck, reverse_deck)
-                    
-                elif user_input == 3:
+                    self.six_card_spread(upright_deck, reverse_deck, user_input)
+                    break
+                        
+                elif int(user_input) == 3:
                     # Exit program
                     print("Bye, come again soon!")
                     break
-                
+                    
                 else:
                     # Catch integers that are not 1, 2, or 3
                     print(user_input, " is not a valid option. Please try again.\n\n")
-                
+                    
             except ValueError:
                 """
                 value error exception displays a message for all other
@@ -77,9 +80,10 @@ class Cards:
                 """
                 # Catches all other inputs enter str, float, etc
                 print("ERROR: Please enter a valid option. "
-                "Valid options are integers 1, 2, or 3\n\n")
+                    "Valid options are integers 1, 2, or 3\n\n")
+                
             
-    def three_card_spread(self, user_input, upright_tarot, reverse_tarot):
+    def three_card_spread(self, upright_tarot, reverse_tarot, user_input=1):
         """
         three_card_spread:
         If user input is equal to 1, display a 3 card tarot spread.
@@ -88,13 +92,13 @@ class Cards:
         self.upright_tarot = upright_tarot
         self.reverse_tarot = reverse_tarot
         
-        while user_input == 1:
+        try:
             # Randomizing ints to draw a random number of cards
             x = rand.randint(0,3)
-            upright_deck = rand.sample(upright_tarot, x)
+            upright_deck = rand.sample(sorted(upright_tarot.items()), x)
             y = 3 - x
             if y > 0:
-                revese_deck = rand.sample(reverse_tarot, y)
+                revese_deck = rand.sample(sorted(reverse_tarot.items()), y)
                 deck = upright_deck
                 deck.extend(revese_deck)
             else:
@@ -104,34 +108,36 @@ class Cards:
             tarot_deck = rand.sample(deck, 3)
             
             # Set headers for cards drawn (made a set to remove any duplicates)
-            set_header = {"~~ Draw 1 : The Past ~~",
-                          "~~ Draw 2 : The Present ~~",
-                          "~~ Draw 3 : The Future ~~"
-                          }
+            set_header = {
+                "~~ Draw 1 : The Past ~~",
+                "~~ Draw 2 : The Present ~~",
+                "~~ Draw 3 : The Future ~~"
+            }
             
             # Turn set header into a sorted tuple
             set_header_standard = sorted(tuple(set_header))
             
             # Changes tarot deck from list -> dict -> list
-            dict_tarot_deck = {k:v for k, v in tarot_deck}
-            list_tarot_deck = list(dict_tarot_deck.items())
-            
+            dict_tarot_deck = {k : v for k, v in tarot_deck}
+            list_tarot_deck = list(dict_tarot_deck.items()) 
+        
             # Create header to display with reading
             print("\n\n\n\033[1;30;48m" + 
-                  "~~~~~ STANDARD TAROT READING ~~~~~"
-                  + "\033[0;30;48m\n")
+                    "~~~~~ STANDARD TAROT READING ~~~~~"
+                    + "\033[0;30;48m\n")
             
             # Print out header, drawn number, card and its description
             for x, (key, value) in zip(set_header_standard, list_tarot_deck):
                 print("\033[1;46;48m" + x + "\033[0;30;48m")
                 print("\033[1;30;48m" + key + "\033[0;30;48m")
-                print(value, "\n")
+                print(value,"\n")
+    
+        except UnboundLocalError:
+            return "Unable to return result, variables to return out of bounds."
         
-        msg = EndingMessage()
-        return msg
             
                   
-    def six_card_spread(self, user_input, upright_tarot, reverse_tarot):
+    def six_card_spread(self, upright_tarot, reverse_tarot, user_input=2):
         """
         six_card_spread: If user input is equal to 2, display a 6 card tarot spread.
 
@@ -180,18 +186,17 @@ class Cards:
                 print("\033[1;46;48m" + key + "\033[0;30;48m")
                 print(value, "\n")
                 
-        msg = EndingMessage()
-        return msg
         
 
 def OpeningMessage(player_name):
-    return f"Welcome {player_name} to your card reading.\n"+\
+    print(f"Welcome {player_name} to your card reading.\n"+\
             "You can choose from a standard reading which displays 3 cards\n"+\
             "and provides you with a reading of the past, present, or future.\n"+\
-            "You can also decide on a universal reading which displays\n"+"6 cards and reveals more in depth details!"
+            "You can also decide on a universal reading which displays\n"+\
+            "6 cards and reveals more in depth details!")
 
 def EndingMessage():
-    return "\033[1;30;48m" +\
+    print("\033[1;30;48m" +\
             "With an automated system like this, it's very tempting" \
             + " to immediately\n" +\
             "repeat a reading if the answer you got was either not" \
@@ -200,16 +205,16 @@ def EndingMessage():
             + " appropriate. If you\n" +\
             "would like clarification on something, use a different " \
             + " reading spread.\n" +\
-            "\033[0;30;48m \n\n"
+            "\033[0;30;48m \n\n")
 
 def main():
     upright_filePath = Path(r"C:\Users\audra\Documents\python-game-master\python-game-master\TarotCardsUpright.csv")
     reverse_filePath = Path(r"C:\Users\audra\Documents\python-game-master\python-game-master\TarotCardsReversed.csv")
     
-    name = input("What is your name?")
+    name = input("What is your name?\n")
     OpeningMessage(name)
     Cards(upright_filePath, reverse_filePath)
-    
+    EndingMessage()
 
 if __name__ == "__main__":
     main()
